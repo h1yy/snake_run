@@ -1,0 +1,468 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #2E7D32; /* 深绿色 */
+    --secondary-color: #4CAF50; /* 绿色 */
+    --accent-color: #8BC34A; /* 浅绿色 */
+    --danger-color: #F44336;
+    --dark-color: #1B5E20; /* 深森林绿 */
+    --light-color: #E8F5E9; /* 浅森林绿 */
+    --success-color: #66BB6A; /* 中绿色 */
+    --warning-color: #FFEB3B; /* 黄色 */
+    --info-color: #B2DFDB; /* 薄荷绿 */
+    --shadow: 0 5px 15px rgba(27, 94, 32, 0.3);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: url('../images/forest_bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: var(--light-color);
+}
+
+.game-container {
+    width: 95%;
+    max-width: 1000px; /* 增加游戏容器最大宽度，适应更大的网格 */
+    background: rgba(232, 245, 233, 0.15);
+    backdrop-filter: blur(5px);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(139, 195, 74, 0.2) 0%, transparent 80%);
+    z-index: -1;
+}
+
+.menu, .settings, .help, .game, .game-over {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    width: 100%;
+    transition: var(--transition);
+}
+
+.leaderboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    width: 100%;
+    transition: var(--transition);
+}
+
+.leaderboard-table {
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 1.5rem;
+    background-color: rgba(0, 77, 38, 0.2);
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.leaderboard-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 0.5rem;
+}
+
+.leaderboard-entry {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.leaderboard-entry:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-entry.highlight {
+    background-color: rgba(255, 215, 0, 0.2);
+    animation: highlight-pulse 2s infinite alternate;
+}
+
+.rank, .score, .date {
+    flex: 1;
+    text-align: center;
+}
+
+.rank {
+    max-width: 60px;
+}
+
+.no-scores {
+    text-align: center;
+    padding: 2rem 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+}
+
+@keyframes highlight-pulse {
+    0% { background-color: rgba(255, 215, 0, 0.2); }
+    100% { background-color: rgba(255, 215, 0, 0.4); }
+}
+
+.hidden {
+    display: none;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    position: relative;
+    padding: 0.5rem 0;
+    
+    /* 增强文字渐变色 */
+    background: linear-gradient(to right, #a0ff56, #4CAF50, #1b5e20);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    
+    /* 增强文字边缘 */
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+    
+    /* 多层阴影效果增强可读性 */
+    text-shadow: 
+        0 2px 0 rgba(0, 0, 0, 0.4),
+        0 0 10px rgba(76, 175, 80, 0.8),
+        0 0 20px rgba(139, 195, 74, 0.4),
+        0 0 30px rgba(27, 94, 32, 0.3);
+    
+    /* 保持动画效果 */
+    animation: rainbow 5s linear infinite, glow 1.5s ease-in-out infinite alternate;
+}
+
+/* 添加额外的发光动画 */
+@keyframes glow {
+    from {
+        filter: drop-shadow(0 0 2px rgba(139, 195, 74, 0.6));
+    }
+    to {
+        filter: drop-shadow(0 0 8px rgba(139, 195, 74, 0.9));
+    }
+}
+
+/* 调整rainbow动画使颜色更加丰富 */
+@keyframes rainbow {
+    0% { background-position: 0% 50%; background-size: 200% 200%; }
+    50% { background-position: 100% 50%; background-size: 200% 200%; }
+    100% { background-position: 0% 50%; background-size: 200% 200%; }
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--light-color);
+}
+
+.btn {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 10px rgba(27, 94, 32, 0.3);
+    min-width: 180px;
+    text-align: center;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(27, 94, 32, 0.4);
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 1rem;
+}
+
+label {
+    font-size: 1.1rem;
+    margin-right: 1rem;
+}
+
+select, input[type="checkbox"] {
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 2px solid rgba(139, 195, 74, 0.3);
+    background: rgba(232, 245, 233, 0.15);
+    color: var(--light-color);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+select {
+    width: 120px;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.game-header .score {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+#back-to-menu-btn, #pause-btn {
+    min-width: 100px;
+}
+
+#game-canvas {
+    background-color: rgba(0, 77, 38, 0.3); /* 深绿色半透明背景，更符合森林主题 */
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px rgba(0, 77, 38, 0.5);
+    width: 100%;
+    height: auto; /* 高度自适应，保持正方形网格 */
+    min-height: 600px; /* 确保最小高度 */
+    max-height: 800px; /* 限制最大高度 */
+    display: block;
+    image-rendering: pixelated; /* 像素风格渲染 */
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+}
+
+.help {
+    gap: 0.5rem; /* 减少整体间距 */
+    max-height: 85vh; /* 增加最大高度 */
+    overflow-y: auto; /* 保留滚动条功能 */
+    padding: 0 8px; /* 减少左右内边距 */
+    scrollbar-width: thin; /* 细滚动条 */
+    scrollbar-color: rgba(139, 195, 74, 0.5) rgba(0, 77, 38, 0.2);
+}
+
+/* 美化滚动条样式 */
+.help::-webkit-scrollbar {
+    width: 6px; /* 减小滚动条宽度 */
+}
+
+.help::-webkit-scrollbar-track {
+    background: rgba(0, 77, 38, 0.2);
+    border-radius: 4px;
+}
+
+.help::-webkit-scrollbar-thumb {
+    background-color: rgba(139, 195, 74, 0.5);
+    border-radius: 4px;
+}
+
+.help h2 {
+    margin-bottom: 0.5rem;
+    font-size: 1.6rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.help p {
+    font-size: 0.9rem; /* 减小字体大小 */
+    margin-bottom: 0.3rem; /* 减少行间距 */
+    text-align: center;
+    color: #ffffff; /* 使用纯白色提高对比度 */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7); /* 保留文字阴影 */
+    letter-spacing: 0.2px; /* 减小字母间距 */
+    line-height: 1.3; /* 减少行高 */
+    max-width: 92%; /* 略微增加宽度 */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.help-section {
+    background-color: rgba(0, 77, 38, 0.5); /* 保留背景不透明度 */
+    border-radius: 10px;
+    padding: 10px; /* 减少内边距 */
+    margin: 5px auto 10px; /* 减少上下外边距 */
+    width: 95%; /* 增加宽度 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); /* 减小阴影 */
+    border: 1px solid rgba(255, 255, 255, 0.15); /* 保留边框 */
+}
+
+.help-section h3 {
+    color: #b8ff75; /* 保留亮绿色 */
+    font-size: 1.1rem; /* 减小标题字体 */
+    margin-bottom: 6px; /* 减少标题下边距 */
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); /* 保留文字阴影 */
+    font-weight: 600; /* 减小粗细 */
+    letter-spacing: 0.3px; /* 减小字母间距 */
+}
+
+.help-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 8px; /* 减少列表下边距 */
+    max-width: 98%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.help-section li {
+    padding: 2px 0; /* 减少列表项内边距 */
+    text-align: center;
+    font-size: 0.9rem; /* 减小列表字体 */
+    color: #ffffff; /* 保留纯白色文字 */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7); /* 减小文字阴影 */
+    letter-spacing: 0.2px; /* 减小字母间距 */
+    line-height: 1.3; /* 减少行高 */
+}
+
+.help-section p {
+    font-style: italic;
+    font-size: 0.85rem; /* 减小提示字体 */
+    color: #fff8e1; /* 保留暖白色 */
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7); /* 减小文字阴影 */
+    margin-top: 5px; /* 减少上边距 */
+    padding: 0 5px;
+}
+
+/* 响应式设计优化 */
+@media (max-width: 768px) {
+    .game-container {
+        width: 95%;
+        padding: 1.5rem;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    .btn {
+        padding: 0.7rem 1.5rem;
+        min-width: 150px;
+    }
+    
+    #game-canvas {
+        min-height: 500px;
+    }
+    
+    .help h2 {
+        font-size: 1.5rem;
+    }
+    
+    .help-section h3 {
+        font-size: 1rem;
+    }
+    
+    .help-section li {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    h2 {
+        font-size: 1.3rem;
+    }
+    
+    .btn {
+        padding: 0.6rem 1.2rem;
+        min-width: 130px;
+        font-size: 0.9rem;
+    }
+    
+    #game-canvas {
+        min-height: 400px;
+    }
+    
+    .help h2 {
+        font-size: 1.4rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .help-section {
+        padding: 8px;
+        margin: 4px auto 8px;
+    }
+    
+    .help-section h3 {
+        font-size: 0.95rem;
+        margin-bottom: 5px;
+    }
+    
+    .help-section li {
+        font-size: 0.8rem;
+        padding: 1px 0;
+    }
+    
+    .help-section p {
+        font-size: 0.75rem;
+    }
+}
+
+.game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 77, 38, 0.85);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    backdrop-filter: blur(5px);
+    text-align: center;
+} 

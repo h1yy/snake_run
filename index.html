@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蛇蛇快跑</title>
+    <link rel="stylesheet" href="css/style.css">
+    <meta itemprop="name" content="蛇蛇快跑">
+    <meta itemprop="description" content="一款超好玩的蛇类游戏，快来挑战高分吧！">
+    <meta itemprop="image" content="https://chrischoureal.github.io/SnakeRun-game/images/share-icon.jpg">
+</head>
+<body>
+    <div class="game-container">
+        <div id="menu" class="menu">
+            <h1>蛇蛇快跑</h1>
+            <button id="start-btn" class="btn">开始游戏</button>
+            <button id="leaderboard-btn" class="btn">分数排行</button>
+            <button id="settings-btn" class="btn">设置</button>
+            <button id="help-btn" class="btn">帮助</button>
+        </div>
+        
+        <div id="settings" class="settings hidden">
+            <h2>设置</h2>
+            <div class="setting-item">
+                <label for="difficulty">难度:</label>
+                <select id="difficulty">
+                    <option value="easy">简单</option>
+                    <option value="medium" selected>中等</option>
+                    <option value="hard">困难</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label for="sound">音效:</label>
+                <input type="checkbox" id="sound" checked>
+            </div>
+            <button id="back-btn" class="btn">返回</button>
+        </div>
+        
+        <div id="help" class="help hidden">
+            <h2>帮助</h2>
+            <div class="help-section">
+                <h3>基础操作</h3>
+                <ul>
+                    <li>使用方向键或WASD控制蛇的移动</li>
+                    <li>按空格键可以使蛇进行2倍加速</li>
+                    <li>按P键可以暂停/继续游戏</li>
+                    <li>吃到食物可以增加分数和长度</li>
+                    <li>避免撞到墙壁和自己的身体</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>难度与陷阱</h3>
+                <ul>
+                    <li>简单难度：没有陷阱，适合新手</li>
+                    <li>中等难度：每5秒生成2个灰色陷阱，范围3x3</li>
+                    <li>困难难度：每5秒生成3个红色尖刺陷阱，范围5x5</li>
+                </ul>
+                <p>注意：陷阱在消失前1秒会闪烁提示即将更新</p>
+            </div>
+            
+            <div class="help-section">
+                <h3>食物系统</h3>
+                <ul>
+                    <li>红色苹果：基础食物，得10分</li>
+                    <li>橙色苹果：特殊食物，得30分，每15秒出现一次，停留5秒</li>
+                    <li>紫色苹果：特殊食物，得50分，每20秒出现一次，停留5秒</li>
+                    <li>彩虹苹果：稀有食物，得100分，每25秒出现一次，仅停留3秒</li>
+                </ul>
+                <p>注意：特殊食物在消失前会闪烁提示即将消失</p>
+            </div>
+            
+            <button id="help-back-btn" class="btn">返回</button>
+        </div>
+        
+        <div id="leaderboard" class="leaderboard hidden">
+            <h2>分数排行</h2>
+            <div class="leaderboard-table">
+                <div class="leaderboard-header">
+                    <div class="rank">排名</div>
+                    <div class="score">分数</div>
+                    <div class="date">日期</div>
+                </div>
+                <div id="leaderboard-entries">
+                    <!-- 排行榜数据将在这里动态插入 -->
+                </div>
+            </div>
+            <button id="leaderboard-back-btn" class="btn">返回</button>
+        </div>
+        
+        <div id="game" class="game hidden">
+            <div class="game-header">
+                <button id="back-to-menu-btn" class="btn">返回菜单</button>
+                <div class="score">分数: <span id="score">0</span></div>
+                <button id="pause-btn" class="btn">暂停</button>
+            </div>
+            <canvas id="game-canvas"></canvas>
+        </div>
+        
+        <div id="game-over" class="game-over hidden">
+            <h2>游戏结束</h2>
+            <p>你的分数: <span id="final-score">0</span></p>
+            <button id="restart-btn" class="btn">重新开始</button>
+            <button id="menu-btn" class="btn">返回菜单</button>
+        </div>
+    </div>
+    
+    <script src="js/game.js"></script>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var isWeixinBrowser = /MicroMessenger/i.test(navigator.userAgent);
+        
+        if (isWeixinBrowser) {
+            wx.config({
+                debug: false,
+                appId: '您的appId',
+                timestamp: 0,
+                nonceStr: '',
+                signature: '',
+                jsApiList: ['updateAppMessageShareData', 'updateTimelineShareData']
+            });
+            
+            wx.ready(function () {
+                wx.updateAppMessageShareData({ 
+                    title: '蛇蛇快跑', 
+                    desc: '一款超好玩的蛇类游戏，快来挑战高分吧！', 
+                    link: window.location.href, 
+                    imgUrl: 'https://chrischoureal.github.io/SnakeRun-game/images/share-icon.jpg'
+                });
+                
+                wx.updateTimelineShareData({ 
+                    title: '蛇蛇快跑 - 快来挑战高分吧！', 
+                    link: window.location.href, 
+                    imgUrl: 'https://chrischoureal.github.io/SnakeRun-game/images/share-icon.jpg'
+                });
+            });
+        }
+    });
+    </script>
+</body>
+</html> 
