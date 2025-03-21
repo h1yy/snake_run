@@ -308,6 +308,13 @@ let scale = window.devicePixelRatio || 1;
 // 创建并缓存网格背景
 let gridBackground = null;
 
+// 添加触摸控制相关变量
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTime = 0;
+let isSwiping = false;
+let touchControls = null;
+
 // 初始化游戏
 function initGame() {
     // 预加载所有音频
@@ -1249,51 +1256,171 @@ function handleKeyPress(event) {
     }
 }
 
-// 添加触摸控制
+// 修改添加触摸控制函数
 function addTouchControls() {
-    let touchStartX = 0;
-    let touchStartY = 0;
+    // 创建触摸控制UI
+    createTouchControls();
     
-    canvas.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-        e.preventDefault();
-    }, { passive: false });
+    // 添加触摸事件监听
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+}
+
+// 创建触摸控制UI
+function createTouchControls() {
+    // 创建触摸控制容器
+    touchControls = document.createElement('div');
+    touchControls.className = 'touch-controls';
+    touchControls.style.cssText = `
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: none;
+        gap: 10px;
+        z-index: 1000;
+    `;
+
+    // 创建方向按钮
+    const directions = ['up', 'down', 'left', 'right'];
+    const buttonSize = '50px';
     
-    canvas.addEventListener('touchmove', (e) => {
-        if (!gameStarted) return;
+    directions.forEach(dir => {
+        const button = document.createElement('button');
+        button.className = `touch-button ${dir}`;
+        button.style.cssText = `
+            width: ${buttonSize};
+            height: ${buttonSize};
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        `;
         
-        const touchEndX = e.touches[0].clientX;
-        const touchEndY = e.touches[0].clientY;
+        // 设置按钮位置
+        const positions = {
+            up: 'transform: translateX(-50%);',
+            down: 'transform: translateX(-50%);',
+            left: 'transform: translateY(-50%);',
+            right: 'transform: translateY(-50%);'
+        };
+        button.style.cssText += positions[dir];
         
-        const dx = touchEndX - touchStartX;
-        const dy = touchEndY - touchStartY;
+        // 添加按钮事件
+        button.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (direction !== getOppositeDirection(dir)) {
+                nextDirection = dir;
+            }
+            button.style.background = 'rgba(255, 255, 255, 0.5)';
+        });
         
-        // 需要一定的滑动距离才触发方向变化
-        const minSwipeDistance = 30;
+        button.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            button.style.background = 'rgba(255, 255, 255, 0.3)';
+        });
         
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > minSwipeDistance) {
+        touchControls.appendChild(button);
+    });
+    
+    // 将控制器添加到游戏容器
+    gameElement.appendChild(touchControls);
+}
+
+// 处理触摸开始
+function handleTouchStart(e) {
+    if (!gameStarted || isPaused) return;
+    
+    e.preventDefault();
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    touchStartTime = Date.now();
+    isSwiping = false;
+}
+
+// 处理触摸移动
+function handleTouchMove(e) {
+    if (!gameStarted || isPaused) return;
+    
+    e.preventDefault();
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchStartX;
+    const deltaY = touch.clientY - touchStartY;
+    const deltaTime = Date.now() - touchStartTime;
+    
+    // 计算滑动速度
+    const speed = Math.sqrt(deltaX * deltaX + deltaY * deltaY) / deltaTime;
+    
+    // 设置滑动阈值
+    const minSwipeDistance = 30;
+    const minSwipeSpeed = 0.5; // 像素/毫秒
+    
+    // 仅当达到最小滑动距离和速度时才触发方向改变
+    if (!isSwiping && (Math.abs(deltaX) > minSwipeDistance || Math.abs(deltaY) > minSwipeDistance) && speed > minSwipeSpeed) {
+        isSwiping = true;
+        
+        // 确定主要移动方向
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
             // 水平滑动
-            if (dx > 0 && direction !== 'left') {
+            if (deltaX > 0 && direction !== 'left') {
                 nextDirection = 'right';
-            } else if (dx < 0 && direction !== 'right') {
+            } else if (deltaX < 0 && direction !== 'right') {
                 nextDirection = 'left';
             }
-        } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > minSwipeDistance) {
+        } else {
             // 垂直滑动
-            if (dy > 0 && direction !== 'up') {
+            if (deltaY > 0 && direction !== 'up') {
                 nextDirection = 'down';
-            } else if (dy < 0 && direction !== 'down') {
+            } else if (deltaY < 0 && direction !== 'down') {
                 nextDirection = 'up';
             }
         }
         
-        // 更新起始点，使滑动更流畅
-        touchStartX = touchEndX;
-        touchStartY = touchEndY;
-        
-        e.preventDefault();
-    }, { passive: false });
+        // 更新起始点，实现连续滑动
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        touchStartTime = Date.now();
+    }
+}
+
+// 处理触摸结束
+function handleTouchEnd(e) {
+    if (!gameStarted || isPaused) return;
+    e.preventDefault();
+    isSwiping = false;
+}
+
+// 获取相反方向
+function getOppositeDirection(dir) {
+    const opposites = {
+        up: 'down',
+        down: 'up',
+        left: 'right',
+        right: 'left'
+    };
+    return opposites[dir];
+}
+
+// 在开始游戏时显示触摸控制
+function showTouchControls() {
+    if (isMobileDevice() && touchControls) {
+        touchControls.style.display = 'grid';
+    }
+}
+
+// 在游戏结束时隐藏触摸控制
+function hideTouchControls() {
+    if (touchControls) {
+        touchControls.style.display = 'none';
+    }
 }
 
 // 播放背景音乐
@@ -1313,7 +1440,7 @@ function stopBackgroundMusic() {
     }
 }
 
-// 开始游戏
+// 修改startGame函数，添加显示触摸控制
 function startGame() {
     // 重置新高分标志
     newHighScore = false;
@@ -1363,9 +1490,12 @@ function startGame() {
     if (isMobileDevice()) {
         requestFullScreen();
     }
+    
+    // 显示触摸控制
+    showTouchControls();
 }
 
-// 结束游戏
+// 修改endGame函数，添加隐藏触摸控制
 function endGame() {
     cancelAnimationFrame(animationId);
     gameStarted = false;
@@ -1414,6 +1544,9 @@ function endGame() {
         highScoreMessage.style.animation = 'highlight-pulse 1.5s infinite alternate';
         gameOverElement.insertBefore(highScoreMessage, restartBtn);
     }
+    
+    // 隐藏触摸控制
+    hideTouchControls();
 }
 
 // 暂停/继续游戏
